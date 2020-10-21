@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DotNetCoreIoT": {
+      "commandName": "Project",
+      "remoteDebugEnabled": true,
+      "remoteDebugMachine": "wbzmini",
+      "authenticationMode": "Windows"
+    }
+  }
+}

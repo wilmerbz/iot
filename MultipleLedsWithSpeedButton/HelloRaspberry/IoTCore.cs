@@ -21,7 +21,7 @@ namespace HelloRaspberry
         private static readonly int[] GpioPinNumbers = new int[] { GPIO_LED_BLUE, GPIO_LED_RED };
 
 
-        private static readonly int[] Speeds = new int[] { 1000, 500, 250, 50 };
+        private static readonly int[] Speeds = new int[] { 1000, 500, 250, 50, 25 };
         private static int _currentSpeedIndex = 0;
 
         private static Dictionary<int, GpioPin> pins;
@@ -110,60 +110,13 @@ namespace HelloRaspberry
         {
             lock (timerDelayChangedLock)
             {
-
                 if (args.Edge == GpioPinEdge.FallingEdge)
                 {
-
-
                     _currentSpeedIndex = _currentSpeedIndex == (Speeds.Length - 1) ? 0 : _currentSpeedIndex + 1;
                     _currentLedIntervalTime = Speeds[_currentSpeedIndex];
-
-                    //var newLedBlinkInterval = _currentLedIntervalTime - LED_INTERVAL_TIME_CHANGE;
-                    //if (newLedBlinkInterval <= LED_INTERVAL_TIME_CHANGE)
-                    //{
-                    //    newLedBlinkInterval = MAX_LED_INTERVAL_TIME;
-                    //}
-
-                    //_currentLedIntervalTime = newLedBlinkInterval;
-
-
+                    
                     timerDelayChanged = true;
-
                 }
-
-                //ledPinValue = (ledPinValue == GpioPinValue.Low) ? GpioPinValue.High : GpioPinValue.Low;
-                //ledPin.Write(ledPinValue);
-
-                //if (args.Edge == GpioPinEdge.FallingEdge)
-                //{
-                //    return;
-                //}
-
-                //;
-                //var value = sender.Read();
-
-                //if (value == _currentPushButtonValue)
-                //{
-                //    return;
-                //}
-
-                //var previousValue = _currentPushButtonValue;
-                //_currentPushButtonValue = value;
-
-                //if (value == GpioPinValue.Low /*|| value == _currentPushButtonValue*/)
-                //{
-                //    return;
-                //}
-
-                //var newLedBlinkInterval = _currentLedIntervalTime - LED_INTERVAL_TIME_CHANGE;
-                //if (newLedBlinkInterval <= LED_INTERVAL_TIME_CHANGE)
-                //{
-                //    newLedBlinkInterval = MAX_LED_INTERVAL_TIME;
-                //}
-
-                //_currentLedIntervalTime = newLedBlinkInterval;
-
-                //timerDelayChanged = true;
 
             }
         }
