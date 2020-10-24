@@ -13,7 +13,6 @@ namespace DotNetCoreIoT
         #region Constants
 
         //private static bool timerDelayChanged = false;
-        private static object timerDelayChangedLock = new object();
         private static int currentPin = -1;
         //private static GpioPinValue _currentPushButtonValue;
         private const int GpioLebBlue = 5;
@@ -63,24 +62,50 @@ namespace DotNetCoreIoT
             InitializePins();
         }
 
-        public bool Started {get; private set;}
+        public bool Started { get; private set; }
 
-        public void Start(){
-            InitializeTimer(_currentLedIntervalTime);    
-            Started = true;           
+        public void Start()
+        {
+            InitializeTimer(_currentLedIntervalTime);
+            Started = true;
         }
 
         private void InitializePins()
         {
-            foreach (var gpioPinNumber in GpioPinNumbers)
+            var pinMode = PinMode.Output;
+            foreach (var pinNumber in GpioPinNumbers)
             {
-                _controller.OpenPin(gpioPinNumber, PinMode.Output);
-
+                OpenPin(pinNumber, pinMode);
             }
 
-            _controller.OpenPin(GpioPushButton, PinMode.InputPullUp);
-            _controller.RegisterCallbackForPinValueChangedEvent(GpioPushButton, PinEventTypes.Falling, OnButtonValueChanged);
-       }
+            try
+            {
+                pinMode = PinMode.InputPullUp;
+                OpenPin(GpioPushButton, pinMode);
+                Console.WriteLine($"Configuring button: {GpioPushButton}");
+
+                _controller.RegisterCallbackForPinValueChangedEvent(GpioPushButton, PinEventTypes.Falling, OnButtonValueChanged);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
+
+        private void OpenPin(int pinNumber, PinMode pinMode)
+        {
+            try
+            {
+                Console.WriteLine($"Configuring pin: {pinNumber} - {pinMode}");
+                _controller.OpenPin(pinNumber, pinMode);
+                Thread.Sleep(1);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
 
         private static readonly object _timerDelayChangedLock = new object();
 
@@ -119,15 +144,18 @@ namespace DotNetCoreIoT
             currentPin = currentPin >= GpioPinNumbers.Length ? 0 : currentPin;
 
             int count = 0;
-            foreach (var pinNumber in GpioPinNumbers)
+            var ledsChar = new char[GpioPinNumbers.Length];
+            for (int pinIndex = 0; pinIndex < GpioPinNumbers.Length; pinIndex++)
             {
+                int pinNumber = GpioPinNumbers[pinIndex];
                 var pinValue = count == currentPin ? PinValue.Low : PinValue.High;
-
+                ledsChar[pinIndex] = pinValue == PinValue.Low ? '-' : '*';
                 _controller.Write(pinNumber, pinValue);
 
                 count++;
             }
-
+            var ledsString = new string(ledsChar);
+            Console.WriteLine(ledsString);
         }
     }
 }
